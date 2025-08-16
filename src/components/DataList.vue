@@ -8,11 +8,9 @@
           <tr>
             <th class="px-4 py-3 text-left text-sm font-semibold">Full Name</th>
             <th class="px-4 py-3 text-left text-sm font-semibold">Batch</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">Contact</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">Request Type</th>
             <th class="px-4 py-3 text-left text-sm font-semibold">Transcript</th>
             <th class="px-4 py-3 text-left text-sm font-semibold">Certificate</th>
-            <!-- <th class="px-4 py-3 text-left text-sm font-semibold">Status</th> -->
+            <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -23,11 +21,9 @@
           >
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.fullName }}</td>
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.batch }}</td>
-            <td class="px-4 py-3 text-sm text-gray-800">{{ row.contact }}</td>
-            <td class="px-4 py-3 text-sm text-gray-800">{{ row.requestType }}</td>
             <td class="px-4 py-3 text-sm text-gray-800 text-center">{{ row.transcriptCount }}</td>
             <td class="px-4 py-3 text-sm text-gray-800 text-center">{{ row.certificateCount }}</td>
-            <!-- <td class="px-4 py-3 text-sm text-gray-800">{{ row.Status }}</td> -->
+            <td class="px-4 py-3 text-sm text-gray-800">{{ row.Status }}</td>
           </tr>
         </tbody>
       </table>
