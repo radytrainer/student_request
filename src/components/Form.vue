@@ -58,6 +58,7 @@ const form = ref({
   requestType: "",
   transcriptCount: "",
   certificateCount: "",
+  status: "New Requested"
 });
 
 const success = ref(false);
