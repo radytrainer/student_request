@@ -39,8 +39,11 @@
 
       <!-- Submit Button -->
       <button type="submit"
-              class="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">
-        Submit Request
+              :disabled="loading"
+              class="w-full bg-blue-600 text-white p-2 rounded-lg 
+                     hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+        <span v-if="loading">Submitting...</span>
+        <span v-else>Submit Request</span>
       </button>
     </form>
 
@@ -61,17 +64,21 @@ const form = ref({
 });
 
 const success = ref(false);
-
-// Replace with your Google Apps Script Web App URL
+const loading = ref(false); // 🚀 new state
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKHb5Gt6R-o_LLfWKANLa53MN4S2z5XHKQwCGRFm1Tp-DhWQmzTs4U0oSEcJ73H-j7hg/exec"
 
 const handleSubmit = async () => {
+  if (loading.value) return; // prevent multiple clicks
+  loading.value = true;
+  success.value = false;
+
   try {
     await fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
       body: JSON.stringify(form.value),
     });
+
     success.value = true;
     form.value = {
       fullName: "",
@@ -83,6 +90,8 @@ const handleSubmit = async () => {
     };
   } catch (error) {
     console.error("Error:", error);
+  } finally {
+    loading.value = false; // enable button again
   }
 };
 </script>
