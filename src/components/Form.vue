@@ -8,7 +8,7 @@
              class="w-full p-2 border rounded-lg" required />
 
       <!-- Batch -->
-      <input v-model="form.batch" type="text" placeholder="Batch (e.g., Batch 2016)"
+      <input v-model="form.batch" type="text" placeholder="Batch (e.g., 2016)"
              class="w-full p-2 border rounded-lg" required />
 
       <!-- Contact -->
