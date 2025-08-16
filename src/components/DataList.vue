@@ -39,7 +39,7 @@
                 :class="{
                   'bg-green-100 text-green-800': row.status === 'Completed',
                   'bg-yellow-100 text-yellow-800': row.status === 'New Request',
-                  'bg-red-100 text-red-800': row.status === 'Panding',
+                  'bg-red-100 text-red-800': row.status === 'Pending',
                 }"
               >
                 {{ row.status }}
