@@ -5,7 +5,6 @@
       <!-- Logo -->
       <div class="flex items-center space-x-2">
         <img src="@/assets/logo.png" alt="Logo" class="w-20 rounded-full" />
-        <span class="font-bold text-xl">PNC Request Hub</span>
       </div>
 
       <!-- Links -->
