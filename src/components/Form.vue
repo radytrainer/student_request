@@ -80,6 +80,7 @@ const handleSubmit = async () => {
       requestType: "",
       transcriptCount: "",
       certificateCount: "",
+      status: "New Requested"
     };
   } catch (error) {
     console.error("Error:", error);
