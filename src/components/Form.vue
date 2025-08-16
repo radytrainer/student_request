@@ -57,8 +57,7 @@ const form = ref({
   contact: "",
   requestType: "",
   transcriptCount: "",
-  certificateCount: "",
-  status: "New Requested"
+  certificateCount: ""
 });
 
 const success = ref(false);
@@ -80,8 +79,7 @@ const handleSubmit = async () => {
       contact: "",
       requestType: "",
       transcriptCount: "",
-      certificateCount: "",
-      status: "New Requested"
+      certificateCount: ""
     };
   } catch (error) {
     console.error("Error:", error);
