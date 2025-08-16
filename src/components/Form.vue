@@ -63,7 +63,7 @@ const form = ref({
 const success = ref(false);
 
 // Replace with your Google Apps Script Web App URL
-// const GOOGLE_SCRIPT_URL = "https://script.googleusercontent.com/a/macros/passerellesnumeriques.org/echo?user_content_key=AehSKLiSjEZIlSruVOJcJmjTsfEN6pGdXpYE9BSis-YTmkFBaBTmJ7IcNTSbA_e2rxEVmx0H0x2iIg78PHde4hkYe35FbPvADAbbLqTY5S3BmWGRo-10eQSsOQy5896svvYYOKUfzSC3avYDq7hEJZYChJ12Qox8p9FX9xQsKRBgMXxOtLfvyPDLZ8whGRjvN3U9OuDzMXM7J8EA849gCMsszy9cT08JNE41-hNIV8b49n1DCy0b_Ve-zcO_mSYLm1O0MNpVHK1Dw4K3yaxwPzg9LKtB5sgrg69ebKdy_x_FI7cLsuqT4wkcSqrqp9sUwrUyKUmLMyFb&lib=M-Od6mL37jTZ9uy2s2tpqw0vcXMd-zcUe";
+
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKHb5Gt6R-o_LLfWKANLa53MN4S2z5XHKQwCGRFm1Tp-DhWQmzTs4U0oSEcJ73H-j7hg/exec"
 
 const handleSubmit = async () => {
