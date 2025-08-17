@@ -27,10 +27,10 @@
           >
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.fullName }}</td>
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.batch }}</td>
-            <td class="px-4 py-3 text-sm text-gray-800 text-center">
+            <td class="px-4 py-3 text-sm text-gray-800 ">
               {{ row.transcriptCount }}
             </td>
-            <td class="px-4 py-3 text-sm text-gray-800 text-center">
+            <td class="px-4 py-3 text-sm text-gray-800">
               {{ row.certificateCount }}
             </td>
             <td class="px-4 py-3 text-sm text-gray-800">
