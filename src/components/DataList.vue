@@ -27,11 +27,15 @@
           >
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.fullName }}</td>
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.batch }}</td>
-            <td class="px-4 py-3 text-sm text-gray-800 ">
-              {{ row.transcriptCount }}
-            </td>
             <td class="px-4 py-3 text-sm text-gray-800">
-              {{ row.certificateCount }}
+              <span :class="{'bg-orange-200 text-green-800 px-3 py-1 text-xs font-semibold rounded-full': 
+                row.transcriptCount != 0
+               }">{{ row.transcriptCount }}</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-white-800">
+               <span :class="{'bg-purple-300 text-white-100 px-3 py-1 text-xs font-semibold rounded-full': 
+                row.certificateCount != 0
+               }">{{ row.certificateCount }}</span>
             </td>
             <td class="px-4 py-3 text-sm text-gray-800">
               <span
