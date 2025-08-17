@@ -2,6 +2,16 @@
   <div class="p-6">
     <h2 class="text-2xl font-bold mb-4 text-gray-800">Requests</h2>
 
+    <!-- 🔎 Search: full width on mobile, small on desktop, right-aligned -->
+    <div class="flex justify-end mb-4">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search..."
+        class="border px-3 py-2 text-sm rounded-md w-full sm:w-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+    </div>
+
     <div class="overflow-x-auto">
       <table
         class="min-w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden"
@@ -10,32 +20,34 @@
           <tr>
             <th class="px-4 py-3 text-left text-sm font-semibold">Full Name</th>
             <th class="px-4 py-3 text-left text-sm font-semibold">Batch</th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">
-              Transcript
-            </th>
-            <th class="px-4 py-3 text-left text-sm font-semibold">
-              Certificate
-            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Transcript</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold">Certificate</th>
             <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="(row, index) in requests"
+            v-for="(row, index) in filteredRequests"
             :key="index"
             class="border-b hover:bg-gray-100 even:bg-gray-50"
           >
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.fullName }}</td>
             <td class="px-4 py-3 text-sm text-gray-800">{{ row.batch }}</td>
             <td class="px-4 py-3 text-sm text-gray-800">
-              <span :class="{'bg-orange-200 text-green-800 px-3 py-1 text-xs font-semibold rounded-full': 
-                row.transcriptCount != 0
-               }">{{ row.transcriptCount }}</span>
+              <span
+                :class="{
+                  'bg-orange-200 text-green-800 px-3 py-1 text-xs font-semibold rounded-full':
+                    Number(row.transcriptCount) !== 0
+                }"
+              >{{ row.transcriptCount }}</span>
             </td>
-            <td class="px-4 py-3 text-sm text-white-800">
-               <span :class="{'bg-purple-300 text-white-100 px-3 py-1 text-xs font-semibold rounded-full': 
-                row.certificateCount != 0
-               }">{{ row.certificateCount }}</span>
+            <td class="px-4 py-3 text-sm text-gray-800">
+              <span
+                :class="{
+                  'bg-purple-300 text-white px-3 py-1 text-xs font-semibold rounded-full':
+                    Number(row.certificateCount) !== 0
+                }"
+              >{{ row.certificateCount }}</span>
             </td>
             <td class="px-4 py-3 text-sm text-gray-800">
               <span
@@ -57,15 +69,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const requests = ref([]);
+
+// One search input
+const searchQuery = ref("");
+
+// Helper: safely normalize any value to lowercase string
+const norm = (v) => String(v ?? "").toLowerCase();
+
+// Computed filter (safe for numbers/nulls)
+const filteredRequests = computed(() => {
+  const q = norm(searchQuery.value).trim();
+  if (!q) return requests.value;
+
+  return requests.value.filter((row) => {
+    const name = norm(row.fullName);
+    const batch = norm(row.batch);
+    const status = norm(row.status);
+    return name.includes(q) || batch.includes(q) || status.includes(q);
+  });
+});
 
 const fetchRequests = async () => {
   const res = await fetch(
     "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhsy8sLw1QYz5RM_8QfKxwqdkKXrKcwHgeQqvzEUiyxBmyDts553LMw0M4dOozC3senfcwhVIVornS7JMTMbYXP_eYLIND12wkUTjExhrd6YJKeVbhMVd2CNe5WOPec8MD5QfwRwv5vsMULRw6p0-cS19h4PsrkzjIBAMkTu_gD8uQ-gExz0LhtMO9a15Gm9wAIOLMj59deQsjtIwqj4o9d3Sfji8la8KsJzuAMLJqXHwyIf1YeJB9Lqg_gocTUa5kjbY8ecNNkWeHRUEC9e0bjKyJKEXqbHdKTSIjc&lib=M-Od6mL37jTZ9uy2s2tpqw0vcXMd-zcUe"
   );
-  requests.value = await res.json();
+  const data = await res.json();
+  // Ensure it's an array; if your API returns an object, adjust here
+  requests.value = Array.isArray(data) ? data : (data?.items || data?.data || []);
 };
 
 onMounted(() => {
