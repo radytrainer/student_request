@@ -1,7 +1,11 @@
 <template>
   <div class="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-xl">
     <h2 class="text-2xl font-bold mb-4">Request Form</h2>
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+    <form 
+      @submit.prevent="handleSubmit" 
+      @keyup.enter="handleSubmit" 
+      class="space-y-4"
+    >
 
       <!-- Full Name -->
       <input v-model="form.fullName" type="text" placeholder="Full Name"
@@ -64,7 +68,7 @@ const form = ref({
 });
 
 const success = ref(false);
-const loading = ref(false); // 🚀 new state
+const loading = ref(false);
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKHb5Gt6R-o_LLfWKANLa53MN4S2z5XHKQwCGRFm1Tp-DhWQmzTs4U0oSEcJ73H-j7hg/exec"
 
@@ -91,7 +95,7 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    loading.value = false; // enable button again
+    loading.value = false;
   }
 };
 </script>
