@@ -20,6 +20,15 @@
         </li>
         <li>
           <router-link 
+            to="/payment_screenshot" 
+            class="hover:underline"
+            active-class="font-bold underline text-blue-500"
+          >
+            Payment Screenshot
+          </router-link>
+        </li>
+        <li>
+          <router-link 
             to="/data" 
             class="hover:underline button"
             active-class="font-bold underline text-blue-500"
