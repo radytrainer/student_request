@@ -77,7 +77,7 @@ export default {
       preview: null,
       loading: false,
       BOT_TOKEN: "8515689151:AAFsjsS91XposLwPPfuHLIRPVlwN0L0kMIE",
-      CHAT_ID: "741303975",
+      CHAT_ID: "-5234855220",
     };
   },
   methods: {
