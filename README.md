@@ -60,3 +60,23 @@ Requests are stored in Cloud Firestore.
 | `requests/{code}` | staff only | full request: name, batch, contact, copy/new, documents, total, status, timeline |
 | `tracking/{code}` | anyone with the exact code (staff can list all) | public copy: shortened name (e.g. "Sok D."), batch, documents, status, timeline |
 | `staff/{uid}` | the staff member themself | marks a user as staff |
+
+## Deploy to Vercel
+
+1. Import the GitHub repo in Vercel. Framework, build command and output folder are set in
+   `vercel.json`, so the defaults are correct.
+2. **Settings → Environment Variables** (Production and Preview):
+
+   | Name | Where to get it |
+   |---|---|
+   | `VITE_FIREBASE_API_KEY` … `VITE_FIREBASE_APP_ID` (6 vars) | same values as your `.env.local` |
+   | `TELEGRAM_BOT_TOKEN` | @BotFather in Telegram — server-only, never exposed to the browser |
+   | `TELEGRAM_CHAT_ID` | the group chat ID payment screenshots go to |
+
+   Redeploy after changing variables (`VITE_*` values are built into the site).
+3. **Firebase console → Authentication → Settings → Authorized domains**: add your Vercel
+   domain (e.g. `your-app.vercel.app`) and any custom domain, or staff sign-in will fail.
+4. Make sure the latest `firestore.rules` is published.
+
+Payment screenshots go through `api/send-payment.js` (a Vercel function), which also runs
+locally under `npm run dev` when `TELEGRAM_*` is set in `.env.local`.

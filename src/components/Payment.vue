@@ -135,9 +135,6 @@ import { useRoute } from "vue-router";
 import { PRICES, formatUSD } from "@/pricing";
 import { myCodes, normalizeCode } from "@/requests";
 
-const BOT_TOKEN = "8515689151:AAFsjsS91XposLwPPfuHLIRPVlwN0L0kMIE";
-const CHAT_ID = "-5234855220";
-
 const route = useRoute();
 const trackingCode = ref(normalizeCode(route.query.code) || myCodes()[0] || "");
 const fileInput = ref(null);
@@ -174,6 +171,24 @@ const reset = () => {
   preview.value = null;
 };
 
+// Keep uploads under the server's 4 MB limit: downscale large photos to JPEG.
+const shrink = (file, maxBytes = 3.5 * 1024 * 1024, maxSide = 2000) =>
+  file.size <= maxBytes
+    ? Promise.resolve(file)
+    : new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob((blob) => resolve(blob || file), "image/jpeg", 0.85);
+        };
+        img.onerror = () => resolve(file);
+        img.src = preview.value;
+      });
+
 const submitImage = async () => {
   if (!image.value) return;
   loading.value = true;
@@ -189,8 +204,6 @@ const submitImage = async () => {
   });
 
   const formData = new FormData();
-  formData.append("chat_id", CHAT_ID);
-  formData.append("photo", image.value);
   const code = normalizeCode(trackingCode.value);
   formData.append(
     "caption",
@@ -198,10 +211,13 @@ const submitImage = async () => {
   );
 
   try {
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-      method: "POST",
-      body: formData,
-    });
+    formData.append("photo", await shrink(image.value), image.value.name || "payment.jpg");
+    const res = await fetch("/api/send-payment", { method: "POST", body: formData });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      status.value = { ok: false, message: `${data.error || "Upload failed"}. Please try again.` };
+      return;
+    }
     status.value = { ok: true, message: "Payment screenshot uploaded successfully. Thank you!" };
     reset();
   } catch (err) {
