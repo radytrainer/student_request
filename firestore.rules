@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isStaff() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/staff/$(request.auth.uid));
+    }
+
+    function validCount(v) {
+      return v is int && v >= 0 && v <= 100;
+    }
+
+    function validCode(code) {
+      return code.matches('^[A-Z2-9]{6}$');
+    }
+
+    function statuses() {
+      return ['requested', 'waiting', 'in_progress', 'completed', 'collected'];
+    }
+
+    // A new request: always starts as "requested", stamped with the server time.
+    function validNewRequest(d) {
+      return d.requestKind in ['Copy', 'New']
+        && d.requestType in ['Transcript', 'Certificate', 'Both']
+        && d.batch is string && d.batch.size() > 0 && d.batch.size() <= 20
+        && validCount(d.transcriptCount)
+        && validCount(d.certificateCount)
+        && d.status == 'requested'
+        && d.timeline.keys().hasOnly(['requested'])
+        && d.timeline.requested == request.time
+        && d.createdAt == request.time;
+    }
+
+    // Staff may only move status forward/backward and stamp when it happened.
+    function validStatusChange() {
+      return isStaff()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'timeline', 'updatedAt'])
+        && request.resource.data.status in statuses()
+        && request.resource.data.timeline.keys().hasOnly(statuses())
+        && request.resource.data.timeline[request.resource.data.status] == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // Full request details: staff only. Students can create but never read back.
+    match /requests/{code} {
+      allow read: if isStaff();
+
+      allow create: if validCode(code)
+        && request.resource.data.keys().hasOnly([
+             'fullName', 'batch', 'contact', 'requestKind', 'requestType',
+             'transcriptCount', 'certificateCount', 'totalPrice',
+             'status', 'timeline', 'createdAt'])
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() > 0 && request.resource.data.fullName.size() <= 120
+        && request.resource.data.contact is string
+        && request.resource.data.contact.size() > 0 && request.resource.data.contact.size() <= 120
+        && request.resource.data.totalPrice is number
+        && validNewRequest(request.resource.data)
+        && existsAfter(/databases/$(database)/documents/tracking/$(code));
+
+      allow update: if validStatusChange();
+      allow delete: if isStaff();
+    }
+
+    // Public progress: masked name, no contact or price. Must match its request.
+    // Anyone with the exact code can open it; only staff can list them all.
+    match /tracking/{code} {
+      allow get: if true;
+      allow list: if isStaff();
+
+      allow create: if validCode(code)
+        && request.resource.data.keys().hasOnly([
+             'name', 'batch', 'requestKind', 'requestType',
+             'transcriptCount', 'certificateCount', 'status', 'timeline', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 120
+        && validNewRequest(request.resource.data)
+        && getAfter(/databases/$(database)/documents/requests/$(code)).data.batch == request.resource.data.batch;
+
+      allow update: if validStatusChange();
+      allow delete: if isStaff();
+    }
+
+    // Staff allow-list: managed in the Firebase console only.
+    match /staff/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
